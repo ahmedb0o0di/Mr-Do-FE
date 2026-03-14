@@ -1,0 +1,46 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --primary-color: #dc7b37;
+  --bg-color: #fafafa;
+  --surface-color: #ffffff;
+  --text-primary: #1e2022;
+  --text-secondary: #6c757d;
+  --border-color: #efefef;
+  --badge-color: #dc7b37; /* The notification dot will use primary color now */
+  --highlight-bg: #f5f7fa;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #e8e8e8; /* Darker backdrop for desktop to show the mobile frame */
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  width: 100%;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+ul {
+  list-style: none;
+}
