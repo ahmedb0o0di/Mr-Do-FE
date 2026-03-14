@@ -1,4 +1,7 @@
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
 defineProps({
   viewMode: {
     type: String,
@@ -6,6 +9,15 @@ defineProps({
   }
 })
 defineEmits(['update:viewMode'])
+
+const router = useRouter()
+const query = ref('')
+
+const doSearch = () => {
+  if (query.value.trim()) {
+    router.push({ name: 'global-search', query: { q: query.value.trim() } })
+  }
+}
 </script>
 
 <template>
@@ -15,7 +27,13 @@ defineEmits(['update:viewMode'])
         <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="#8E8E93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M21 21L16.65 16.65" stroke="#8E8E93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <input type="text" placeholder="Search services..." class="search-input" />
+      <input 
+        type="text" 
+        v-model="query" 
+        @keyup.enter="doSearch" 
+        placeholder="Search handymen, area, phone..." 
+        class="search-input" 
+      />
     </div>
     <div class="view-toggles">
       <button :class="['toggle-btn', { active: viewMode === 'list' }]" @click="$emit('update:viewMode', 'list')">

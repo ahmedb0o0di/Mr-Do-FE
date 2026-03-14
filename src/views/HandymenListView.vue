@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMenu } from '../composables/useMenu'
 
@@ -7,6 +7,7 @@ const route = useRoute()
 const router = useRouter()
 
 const viewMode = ref('list')
+const searchQuery = ref('')
 const { toggleMenu } = useMenu()
 
 // Mock data based on wireframe
@@ -19,7 +20,9 @@ const handymen = [
     avatar: 'https://i.pravatar.cc/150?u=1',
     skills: ['Electrical', 'Plumbing'],
     available: 'Available 7 Days',
-    jobsCompleted: 52
+    jobsCompleted: 52,
+    area: 'Downtown LA',
+    phone: '310-555-0101'
   },
   {
     id: 2,
@@ -29,7 +32,9 @@ const handymen = [
     avatar: 'https://i.pravatar.cc/150?u=2',
     skills: ['Electrical'],
     badge: 'Licensed & Insured',
-    jobsCompleted: 45
+    jobsCompleted: 45,
+    area: 'Hollywood',
+    phone: '323-555-0202'
   },
   {
     id: 3,
@@ -39,9 +44,27 @@ const handymen = [
     avatar: 'https://i.pravatar.cc/150?u=3',
     skills: ['Electrical'],
     experience: '10+ Years Experience',
-    jobsCompleted: 32
+    jobsCompleted: 32,
+    area: 'Santa Monica',
+    phone: '424-555-0303'
   }
 ]
+
+onMounted(() => {
+  if (route.query.q) {
+    searchQuery.value = route.query.q
+  }
+})
+
+const filteredHandymen = computed(() => {
+  if (!searchQuery.value) return handymen
+  const query = searchQuery.value.toLowerCase()
+  return handymen.filter(h => 
+    h.name.toLowerCase().includes(query) ||
+    (h.area && h.area.toLowerCase().includes(query)) ||
+    (h.phone && h.phone.includes(query))
+  )
+})
 </script>
 
 <template>
@@ -78,9 +101,12 @@ const handymen = [
       </header>
 
       <!-- Subtitle -->
-      <div class="subtitle-container">
+      <div class="subtitle-container" v-if="route.name !== 'global-search'">
         <span class="subtitle-label">Category:</span>
         <span class="subtitle-value">Electrical</span>
+      </div>
+      <div class="subtitle-container" v-else>
+        <span class="subtitle-label">Global Search Results</span>
       </div>
 
       <!-- Search Component specific to Handymen List -->
@@ -90,7 +116,7 @@ const handymen = [
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <input type="text" placeholder="Search by name..." class="search-input" />
+          <input type="text" v-model="searchQuery" placeholder="Search by name, area, or phone..." class="search-input" />
           <button class="microphone-btn">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
@@ -136,7 +162,7 @@ const handymen = [
     <main class="scrollable-content">
       <div :class="['handyman-list', viewMode]">
         <!-- Profile Card -->
-        <div class="profile-card" v-for="pro in handymen" :key="pro.id">
+        <div class="profile-card" v-for="pro in filteredHandymen" :key="pro.id">
           <div class="card-top">
             <img :src="pro.avatar" class="avatar" alt="Avatar" />
             <div class="details">
@@ -152,6 +178,10 @@ const handymen = [
                 <span class="tag secondary" v-if="pro.available">{{ pro.available }}</span>
                 <span class="tag secondary" v-if="pro.badge">{{ pro.badge }}</span>
                 <span class="tag secondary" v-if="pro.experience">{{ pro.experience }}</span>
+              </div>
+              <div class="contact-info">
+                <span v-if="pro.area">📍 {{ pro.area }}</span>
+                <span v-if="pro.phone">📞 {{ pro.phone }}</span>
               </div>
             </div>
           </div>
@@ -389,6 +419,15 @@ const handymen = [
 .tag.secondary {
   background-color: #F1F5F9;
   color: #475569;
+}
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 500;
 }
 .card-bottom {
   display: flex;

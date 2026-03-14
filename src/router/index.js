@@ -20,6 +20,11 @@ const router = createRouter({
       component: HandymenListView
     },
     {
+      path: '/search',
+      name: 'global-search',
+      component: HandymenListView
+    },
+    {
       path: '/handyman-profile/:id',
       name: 'handyman-profile',
       component: HandymanProfileView
